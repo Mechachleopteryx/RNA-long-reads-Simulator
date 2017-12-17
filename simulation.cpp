@@ -16,10 +16,21 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sstream>
-
+#include <random>
 
 
 using namespace std;
+
+
+void staircase(string& read, default_random_engine& generator){
+	normal_distribution<double> distribution((uint32_t)read.size()/2, 30);
+	double size = distribution(generator);
+	read = read.substr(0, size);
+}
+
+
+
+
 
 
 
@@ -35,6 +46,13 @@ char randomNucleotide(){
 			return 'T';
 	}
 	return 'A';
+}
+
+
+string addHomopolymer(char& nuc){
+	uint32_t length(rand() % 10);
+	string homopolymer(length, nuc);
+	return homopolymer;
 }
 
 
@@ -58,8 +76,9 @@ void insertion(double rate, string& result){
 
 
 string mutateSequence(const string& referenceSequence, uint maxMutRate=10, vector <double> ratioMutation={0.06,0.73,0.21}){
-	string result;
+	string result, currentNuc, homopoly;
 	result.reserve(5 * referenceSequence.size());
+	
 	for(uint i(0); i < referenceSequence.size(); ++i){
 		uint mutRate(maxMutRate);
 		double substitutionRate(mutRate * ratioMutation[0]);
@@ -67,7 +86,28 @@ string mutateSequence(const string& referenceSequence, uint maxMutRate=10, vecto
 		double deletionRate(mutRate * ratioMutation[2]);
 		uint dice(rand() % 100);
 
-
+		//// homopolymers ////
+		if (currentNuc.size() < 5){
+			if (i > 0){
+				if (currentNuc.empty()){
+					currentNuc.push_back(result.back());
+				} else {
+					if (result.back() == currentNuc.back()){
+						currentNuc.push_back(result.back());
+					} else {
+						currentNuc.back() = result.back();
+					}
+				}
+			}
+		} else {
+			uint32_t probaHomopoly(rand() % 100);
+			if (probaHomopoly < 1){
+				homopoly = addHomopolymer(currentNuc.back());
+				result += homopoly;
+			}
+			currentNuc = {};
+		}
+		////
 		if (dice <substitutionRate ){
 			//SUBSTITUTION
 			char newNucleotide(randomNucleotide());
@@ -131,6 +171,7 @@ vector<pair<string, uint32_t>> generateTranscriptReferences(){
 
 
 void generateReads(uint32_t coverage, const string& outFileName="simulatedReads.fa", const string& outRefFileName="simulatedPerfectSequences.fa"){
+	default_random_engine generator;
 	ofstream out(outFileName);
 	ofstream outRef(outRefFileName);
 	vector<pair<string, uint32_t>> referenceList(generateTranscriptReferences()); // transcripts and their expression levels (= number of copies that appear)
@@ -141,9 +182,10 @@ void generateReads(uint32_t coverage, const string& outFileName="simulatedReads.
 		for (uint32_t numberOfReads(0); numberOfReads < referenceList[i].second * coverage; ++numberOfReads){
 			reference = referenceList[i].first;
 			read = mutateSequence(reference); // here we must add homopolymers
+			// here we need the staircase effect
+			staircase(read, generator);
 			out <<">" << noRead << "|referenceNumber:" << i << endl << read << endl;
 			outRef <<">" << noRead << "|referenceNumber:" << i << endl << reference << endl;
-			// here we need the staircase effect
 			++noRead;
 		}
 		
@@ -165,3 +207,4 @@ int main(int argc, char ** argv){
 	}
 	return 0;
 }
+
