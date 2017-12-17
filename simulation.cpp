@@ -22,8 +22,14 @@
 using namespace std;
 
 
+
+uint32_t SD_GAUSSIAN(30);
+uint32_t SIZE_TO_START_HOMOPOL(5);
+uint32_t PROBA_HOMOPOLY(1);
+uint32_t SIZE_MAX_HOMOPOLY(10);
+
 void staircase(string& read, default_random_engine& generator){
-	normal_distribution<double> distribution((uint32_t)read.size()/2, 30);
+	normal_distribution<double> distribution((uint32_t)read.size()/2, SD_GAUSSIAN);
 	double size = distribution(generator);
 	read = read.substr(0, size);
 }
@@ -50,7 +56,7 @@ char randomNucleotide(){
 
 
 string addHomopolymer(char& nuc){
-	uint32_t length(rand() % 10);
+	uint32_t length(rand() % SIZE_MAX_HOMOPOLY);
 	string homopolymer(length, nuc);
 	return homopolymer;
 }
@@ -87,7 +93,7 @@ string mutateSequence(const string& referenceSequence, uint maxMutRate=10, vecto
 		uint dice(rand() % 100);
 
 		//// homopolymers ////
-		if (currentNuc.size() < 5){
+		if (currentNuc.size() <  SIZE_TO_START_HOMOPOL){
 			if (i > 0){
 				if (currentNuc.empty()){
 					currentNuc.push_back(result.back());
@@ -101,7 +107,7 @@ string mutateSequence(const string& referenceSequence, uint maxMutRate=10, vecto
 			}
 		} else {
 			uint32_t probaHomopoly(rand() % 100);
-			if (probaHomopoly < 1){
+			if (probaHomopoly < PROBA_HOMOPOLY){
 				homopoly = addHomopolymer(currentNuc.back());
 				result += homopoly;
 			}
