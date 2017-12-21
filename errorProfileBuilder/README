@@ -1,0 +1,6 @@
+ErrorProfileBuilder:
+Input: AlignQC output files
+Output: Error profile file parseable by the simulator
+
+TODO list:
+  -Everything for now :)
