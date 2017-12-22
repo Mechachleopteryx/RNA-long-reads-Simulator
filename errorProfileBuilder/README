@@ -1,6 +1,15 @@
-ErrorProfileBuilder:
-Input: AlignQC output files
-Output: Error profile file parseable by the simulator
+ErrorProfileBuilder
 
-TODO list:
-  -Everything for now :)
+To test with a sample example:
+python errorProfileBuilder.py -b sample_example/chr21chr22chrM.sorted.bam -i sample_example/chr21chr22chrM.sorted.bam.bai -r sample_example/chr21chr22chrM.fa.gz
+
+
+Input:
+Sorted BAM, Sorted BAM index, genomic reference
+BAM files must be aligned to the genomic reference given as input
+For more details: python errorProfileBuilder.py --help
+
+
+Output:
+error_profile.basic : file with the chance of a base being wrong
+error_profile.detailed : file with the chance of a base being wrong + the chance of each specific error
