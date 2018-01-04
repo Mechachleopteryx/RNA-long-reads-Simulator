@@ -35,11 +35,6 @@ void staircase(string& read, default_random_engine& generator){
 }
 
 
-
-
-
-
-
 char randomNucleotide(){
 	switch (rand() % 4){
 		case 0:
@@ -158,7 +153,7 @@ vector<string> split(const string &s, char delim){
 }
 
 
-
+//// this function needs to be updated with the output filled with sequences from the ref transcriptome and expressions levels from FS ////
 vector<pair<string, uint32_t>> generateTranscriptReferences(){
 	string sequence;
 	vector<pair<string, uint32_t>> result;

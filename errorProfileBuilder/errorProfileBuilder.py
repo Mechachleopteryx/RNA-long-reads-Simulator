@@ -39,29 +39,29 @@ class AlignQCParser:
 
     with open(self.__output+".basic", 'w') as basicErrorProfileFile:
       sys.stdout = basicErrorProfileFile
-      print "mismatches {:.06f}".format(float(errorStats["MISMATCHES"])/errorStats["ALIGNMENT_BASES"])
-      print "non-homopolymer_ins {:.06f}".format(float(errorStats["COMPLETE_INSERTION"])/errorStats["ALIGNMENT_BASES"])
-      print "homopolymer_ins {:.06f}".format(float(errorStats["HOMOPOLYMER_INSERTION"])/errorStats["ALIGNMENT_BASES"])
-      print "non-homopolymer_del {:.06f}".format(float(errorStats["COMPLETE_DELETION"])/errorStats["ALIGNMENT_BASES"])
-      print "homopolymer_del {:.06f}".format(float(errorStats["HOMOPOLYMER_DELETION"])/errorStats["ALIGNMENT_BASES"])
+      print("mismatches {:.06f}".format(float(errorStats["MISMATCHES"])/errorStats["ALIGNMENT_BASES"]))
+      print("non-homopolymer_ins {:.06f}".format(float(errorStats["COMPLETE_INSERTION"])/errorStats["ALIGNMENT_BASES"]))
+      print("homopolymer_ins {:.06f}".format(float(errorStats["HOMOPOLYMER_INSERTION"])/errorStats["ALIGNMENT_BASES"]))
+      print("non-homopolymer_del {:.06f}".format(float(errorStats["COMPLETE_DELETION"])/errorStats["ALIGNMENT_BASES"]))
+      print("homopolymer_del {:.06f}".format(float(errorStats["HOMOPOLYMER_DELETION"])/errorStats["ALIGNMENT_BASES"]))
       sys.stdout = sys.__stdout__
 
     with open(self.__output+".detailed", 'w') as detailedErrorProfileFile:
       sys.stdout = detailedErrorProfileFile
-      print "mismatches {:.06f}".format(float(errorStats["MISMATCHES"])/errorStats["ALIGNMENT_BASES"])
+      print("mismatches {:.06f}".format(float(errorStats["MISMATCHES"])/errorStats["ALIGNMENT_BASES"]))
       for (targetBase, queryBase, count, total) in errorRawVector:
         if (targetBase!="-" and queryBase!="-" and targetBase!=queryBase):
-          print "{}->{} {:0.06f}".format(targetBase, queryBase, float(count)/errorStats["MISMATCHES"])
+          print("{}->{} {:0.06f}".format(targetBase, queryBase, float(count)/errorStats["MISMATCHES"]))
 
-      print "ins {:.06f}".format(float(errorStats["ANY_INSERTION"])/errorStats["ALIGNMENT_BASES"])
+      print("ins {:.06f}".format(float(errorStats["ANY_INSERTION"])/errorStats["ALIGNMENT_BASES"]))
       for (targetBase, queryBase, count, total) in errorRawVector:
         if (targetBase=="-" and queryBase!="-"):
-          print "{} {:0.06f}".format(queryBase, float(count)/errorStats["ANY_INSERTION"])
+          print("{} {:0.06f}".format(queryBase, float(count)/errorStats["ANY_INSERTION"]))
 
-      print "del {:.06f}".format(float(errorStats["ANY_DELETION"])/errorStats["ALIGNMENT_BASES"])
+      print("del {:.06f}".format(float(errorStats["ANY_DELETION"])/errorStats["ALIGNMENT_BASES"]))
       for (targetBase, queryBase, count, total) in errorRawVector:
         if (targetBase!="-" and queryBase=="-"):
-          print "{} {:0.06f}".format(targetBase, float(count)/errorStats["ANY_DELETION"])
+          print("{} {:0.06f}".format(targetBase, float(count)/errorStats["ANY_DELETION"]))
 
       sys.stdout = sys.__stdout__
 
@@ -73,11 +73,11 @@ class ErrorProfileBuilder:
 
     #run alignqc to get the error profile
     #TODO: this is not well-coded
-    print "Invoking {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py to compute the error profile!".format(wd=os.getcwd())
+    print("Invoking {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py to compute the error profile!".format(wd=os.getcwd()))
     commandLine = "python {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py --max_length {maxBases} -random  -r {ref} --input_index {index} -o {bamFileOnly}.error.pdf --output_stats {bamFileOnly}.error.stats --output_raw {bamFileOnly}.error.raw {bam}".format(wd=os.getcwd(), index=args.sorted_bam_index, ref=args.reference, maxBases=args.max_bases, bam=args.sorted_bam, bamFileOnly=os.path.basename(args.sorted_bam))
-    print commandLine
+    print(commandLine)
     os.system(commandLine)
-    print "Done!"
+    print("Done!")
 
     #parse the error profile and create the files we want
     alignQCParser = AlignQCParser(os.path.basename(args.sorted_bam), args.output)
