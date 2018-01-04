@@ -25,7 +25,6 @@ using namespace std;
 
 uint32_t SD_GAUSSIAN(30);
 uint32_t SIZE_TO_START_HOMOPOL(5);
-uint32_t PROBA_HOMOPOLY(1);
 uint32_t SIZE_MAX_HOMOPOLY(10);
 uint32_t SIZE_MIN_HOMOPOLY(3);
 
