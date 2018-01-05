@@ -28,6 +28,8 @@ uint32_t SIZE_TO_START_HOMOPOL(5);
 uint32_t SIZE_MAX_HOMOPOLY(10);
 uint32_t SIZE_MIN_HOMOPOLY(3);
 
+
+//// truncate reads for the staircase effect ////
 void staircase(string& read, default_random_engine& generator){
 	normal_distribution<double> distribution((uint32_t)read.size()/2, SD_GAUSSIAN);
 	double size = distribution(generator);
@@ -35,6 +37,8 @@ void staircase(string& read, default_random_engine& generator){
 }
 
 
+
+//// get a random nucleotide ////
 char randomNucleotide(){
 	switch (rand() % 4){
 		case 0:
@@ -50,6 +54,7 @@ char randomNucleotide(){
 }
 
 
+//// create an insertion in homopolymers ////
 string addHomopolymer(char& nuc){
 	uint32_t length(0);
 	while (length < 1){
@@ -60,6 +65,7 @@ string addHomopolymer(char& nuc){
 }
 
 
+//// create a deletion in homopolymers ////
 void removeHomopolymer(uint64_t size, string& result){
 	string tmpResult("");
 	uint32_t length(0);
@@ -73,6 +79,7 @@ void removeHomopolymer(uint64_t size, string& result){
 }
 
 
+//// generate a random seq of a given length ////
 string randomSequence(const uint32_t length){
 	string result(length, 'A');
 	for(uint32_t i(0); i < length; ++i){
@@ -81,6 +88,8 @@ string randomSequence(const uint32_t length){
 	return result;
 }
 
+
+//// add insertion ////
 void insertion(double rate, string& result){
 	uint64_t dice(rand() % 100*100*100);
 	if(dice < rate){
@@ -91,12 +100,10 @@ void insertion(double rate, string& result){
 }
 
 
+//// add errors in reads usinf the error profile ////
 string mutateSequence(const string& referenceSequence, 	unordered_map<string, double>& errorProfile){
-//~ string mutateSequence(const string& referenceSequence, uint maxMutRate=10, vector <double> ratioMutation={0.06,0.73,0.21}){
 	string result, currentNuc, homopoly;
 	result.reserve(5 * referenceSequence.size());
-
-
 	// get each error value
 	// sort mism/ins/del
 	double errors [] = {errorProfile["mismatches"], errorProfile["non-homopolymer_ins"], errorProfile["non-homopolymer_del"], errorProfile["homopolymer_ins"], errorProfile["non-homopolymer_del"]};
@@ -127,15 +134,11 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 		}
 		prevValue += val;
 	}
-
 	uint32_t i(0);
 	bool isError(false);
-
 	while (i < referenceSequence.size()){
-		
 		isError = false;
 		uint dice(rand() % 100*100*100);
-
 		//// homopolymers ////
 		if (currentNuc.size() <  SIZE_TO_START_HOMOPOL){
 			if (i > 0){
@@ -150,7 +153,6 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 				}
 			}
 		} else {
-			
 			uint32_t probaHomopoly(rand() % 100*100*100);
 			for (auto it(errorProfileHomoSorted.begin()); it !=errorProfileHomoSorted.end(); ++it){
 				if (probaHomopoly < it->second){
@@ -210,6 +212,8 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 	return result;
 }
 
+
+//// split a string ////
 vector<string> split(const string &s, char delim){
   stringstream ss(s);
   string item;
@@ -221,7 +225,7 @@ vector<string> split(const string &s, char delim){
 }
 
 
-
+//// read multiline faste and get one read and its header ////
 pair<string, string> getRead(ifstream* readFile){
 	pair<string, string> reads;
 	string header, read, inter;
@@ -271,7 +275,7 @@ pair<string, string> getRead(ifstream* readFile){
 
 
 
-//// this function needs to be updated with the output filled with sequences from the ref transcriptome and expressions levels from FS ////
+//// get reference transcripts from fasta file derived from gtf, and expression from FS .pro file, associate header/sequence/expression ////
 void generateTranscriptReferences(string& expressionFileName, string& transcriptsFileName, unordered_map <string, pair<string, uint32_t>>& transcriptSeqAndExpression){
 	ifstream expression(expressionFileName);
 	string expressionLine, transcript;
@@ -289,55 +293,33 @@ void generateTranscriptReferences(string& expressionFileName, string& transcript
 	}
 	// read the fasta file and get sequences
 	ifstream sequences(transcriptsFileName);
-	//~ string seq, header;
 	pair<string, string> read;
 	while (not sequences.eof()){
-		//~ getline(sequences, header);
-		//~ getline(sequences, seq);
 		read = getRead(&sequences);
-		//~ if ((not header.empty()) and (not seq.empty())){
 		transcript = split(read.first.substr(1), ' ')[0];
 		if (transcriptSeqAndExpression.count(transcript)){
 			transcriptSeqAndExpression[transcript].first = read.second;
-			//~ transcriptSeqAndExpression[transcript].first = seq;
 		}
-		//~ }
 	}
-	//~ vector<pair<string, uint32_t>> result;
-	//~ string transcript;
-	//~ pair<string, uint32_t> transcriptAndExpression;
-	//~ ////////// for testing only, does not take the gtf information at the moment ///////////
-	//~ for (uint32_t i(0); i < 10; ++i){
-		//~ transcriptAndExpression = { randomSequence(2000), rand() % 10};
-		//~ result.push_back(transcriptAndExpression);
-	//~ }
-	//~ return result;
 }
 
 
 
 
-
+//// compute final reads ////
 void generateReads(uint32_t coverage, unordered_map<string, double>& errorProfile, unordered_map <string, pair<string, uint32_t>>& transcriptSeqAndExpression, const string& outFileName="simulatedReads.fa", const string& outRefFileName="simulatedPerfectSequences.fa"){
 	default_random_engine generator;
 	ofstream out(outFileName);
 	ofstream outRef(outRefFileName);
-	//~ vector<pair<string, uint32_t>> referenceList(generateTranscriptReferences()); // transcripts and their expression levels (= number of copies that appear)
 	string read, reference;
-
 	uint32_t noRead(0);
 	for (auto it(transcriptSeqAndExpression.begin()); it != transcriptSeqAndExpression.end(); ++it){
-	//~ for(uint32_t i(0);i < referenceList.size(); ++i){
-		//~ for (uint32_t numberOfReads(0); numberOfReads < referenceList[i].second * coverage; ++numberOfReads){
 		for (uint32_t numberOfReads(0); numberOfReads < it->second.second * coverage; ++numberOfReads){
-			//~ reference = referenceList[i].first;
 			reference = it->second.first;
 			read = mutateSequence(reference, errorProfile); // here we must add homopolymers
 			staircase(read, generator);
 			out <<">" << noRead << "|reference:" << it->first << endl << read << endl;
-			//~ out <<">" << noRead << "|referenceNumber:" << i << endl << read << endl;
 			outRef <<">" << noRead << "|reference:" << it->first << endl << reference << endl;
-			//~ outRef <<">" << noRead << "|referenceNumber:" << i << endl << reference << endl;
 			++noRead;
 		}
 		
@@ -345,7 +327,7 @@ void generateReads(uint32_t coverage, unordered_map<string, double>& errorProfil
 }
 
 
-
+//// read error profile from file ////
 void getErrorProfile(string& errorProfileFileName, unordered_map<string, double>& errorProfile){
 	ifstream in(errorProfileFileName);
 	string errorLine;
@@ -403,9 +385,6 @@ int main(int argc, char ** argv){
 	generateReads(coverage, errorProfile, transcriptSeqAndExpression);
 	auto end = chrono::system_clock::now(); auto waitedFor = end - startChrono;
 	cout << "Time  in ms : " << (chrono::duration_cast<chrono::milliseconds>(waitedFor).count()) << endl;
-
-
-
 	return 0;
 }
 
