@@ -222,38 +222,69 @@ vector<string> split(const string &s, char delim){
 
 
 //// this function needs to be updated with the output filled with sequences from the ref transcriptome and expressions levels from FS ////
-vector<pair<string, uint32_t>> generateTranscriptReferences(){
-	string sequence;
-	vector<pair<string, uint32_t>> result;
-	string transcript;
-	pair<string, uint32_t> transcriptAndExpression;
-	////////// for testing only, does not take the gtf information at the moment ///////////
-	for (uint32_t i(0); i < 10; ++i){
-		transcriptAndExpression = { randomSequence(2000), rand() % 10};
-		result.push_back(transcriptAndExpression);
+void generateTranscriptReferences(string& expressionFileName, string& transcriptsFileName, unordered_map <string, pair<string, uint32_t>>& transcriptSeqAndExpression){
+	ifstream expression(expressionFileName);
+	string expressionLine, transcript;
+	uint expr;
+	vector<string> transcriptExpression;
+	// read the .pro file and extract transcript + expression
+	while (not expression.eof()){
+		getline(expression, expressionLine);
+		transcriptExpression = split(expressionLine, '\t');
+		if (transcriptExpression.size() > 6){
+			expr = stoi(transcriptExpression[5]);
+			transcript = transcriptExpression[1];
+			transcriptSeqAndExpression.insert({transcript, {"", expr}});
+		}
 	}
-	return result;
+	// read the fasta file and get sequences
+	ifstream sequences(transcriptsFileName);
+	string seq, header;
+	while (not sequences.eof()){
+		getline(sequences, header);
+		getline(sequences, seq);
+		if ((not header.empty()) and (not seq.empty())){
+			transcript = header.substr(1);
+			if (transcriptSeqAndExpression.count(transcript)){
+				transcriptSeqAndExpression[transcript].first = seq;
+			}
+		}
+	}
+	//~ vector<pair<string, uint32_t>> result;
+	//~ string transcript;
+	//~ pair<string, uint32_t> transcriptAndExpression;
+	//~ ////////// for testing only, does not take the gtf information at the moment ///////////
+	//~ for (uint32_t i(0); i < 10; ++i){
+		//~ transcriptAndExpression = { randomSequence(2000), rand() % 10};
+		//~ result.push_back(transcriptAndExpression);
+	//~ }
+	//~ return result;
 }
 
 
 
 
 
-void generateReads(uint32_t coverage, unordered_map<string, double>& errorProfile, const string& outFileName="simulatedReads.fa", const string& outRefFileName="simulatedPerfectSequences.fa"){
+void generateReads(uint32_t coverage, unordered_map<string, double>& errorProfile, unordered_map <string, pair<string, uint32_t>>& transcriptSeqAndExpression, const string& outFileName="simulatedReads.fa", const string& outRefFileName="simulatedPerfectSequences.fa"){
 	default_random_engine generator;
 	ofstream out(outFileName);
 	ofstream outRef(outRefFileName);
-	vector<pair<string, uint32_t>> referenceList(generateTranscriptReferences()); // transcripts and their expression levels (= number of copies that appear)
+	//~ vector<pair<string, uint32_t>> referenceList(generateTranscriptReferences()); // transcripts and their expression levels (= number of copies that appear)
 	string read, reference;
 
 	uint32_t noRead(0);
-	for(uint32_t i(0);i < referenceList.size(); ++i){
-		for (uint32_t numberOfReads(0); numberOfReads < referenceList[i].second * coverage; ++numberOfReads){
-			reference = referenceList[i].first;
+	for (auto it(transcriptSeqAndExpression.begin()); it != transcriptSeqAndExpression.end(); ++it){
+	//~ for(uint32_t i(0);i < referenceList.size(); ++i){
+		//~ for (uint32_t numberOfReads(0); numberOfReads < referenceList[i].second * coverage; ++numberOfReads){
+		for (uint32_t numberOfReads(0); numberOfReads < it->second.second * coverage; ++numberOfReads){
+			//~ reference = referenceList[i].first;
+			reference = it->second.first;
 			read = mutateSequence(reference, errorProfile); // here we must add homopolymers
 			staircase(read, generator);
-			out <<">" << noRead << "|referenceNumber:" << i << endl << read << endl;
-			outRef <<">" << noRead << "|referenceNumber:" << i << endl << reference << endl;
+			out <<">" << noRead << "|reference:" << it->first << endl << read << endl;
+			//~ out <<">" << noRead << "|referenceNumber:" << i << endl << read << endl;
+			outRef <<">" << noRead << "|reference:" << it->first << endl << reference << endl;
+			//~ outRef <<">" << noRead << "|referenceNumber:" << i << endl << reference << endl;
 			++noRead;
 		}
 		
@@ -279,11 +310,11 @@ void getErrorProfile(string& errorProfileFileName, unordered_map<string, double>
 
 int main(int argc, char ** argv){
 	uint32_t coverage(0);
-	string errorProfileFileName("");
+	string errorProfileFileName(""), transcriptsFileName(""), expressionFileName("");
 	srand (time(NULL));
 	auto startChrono = chrono::system_clock::now();
 	int32_t c(0);
-	while ((c = getopt (argc, argv, "c:e:")) != -1){
+	while ((c = getopt (argc, argv, "c:e:t:p:")) != -1){
 		switch(c){
 			case 'c':
 				coverage=stoi(optarg);
@@ -291,19 +322,32 @@ int main(int argc, char ** argv){
 			case 'e':
 				errorProfileFileName=optarg;
 				break;
+			case 't':
+				transcriptsFileName=optarg;
+				break;
+			case 'p':
+				expressionFileName=optarg;
+				break;
 		}
 	}
-	if(coverage == 0 or errorProfileFileName ==""){
+	if(coverage == 0 or errorProfileFileName == "" or transcriptsFileName == "" or expressionFileName == ""){
 		cout
 		<<"Mandatory parameters"<<endl
 		<<"-c coverage"<<endl
 		<<"-e error profile file"<<endl
-		<< "usage: ./theReadCreator -c coverage -e ERROR_PROFILE_FILE" << endl;
+		<<"-t transcripts fasta file"<<endl
+		<<"-p transcripts expression file"<<endl
+		<< "usage: ./theReadCreator -c coverage -e ERROR_PROFILE_FILE -t TRANSCRIPTS_FILE -p EXPRESSION_PRO_FILE" << endl;
 		return 0;
 	}
 	unordered_map<string, double> errorProfile;
+	cout << "Reading error profile..." << endl;
 	getErrorProfile(errorProfileFileName, errorProfile);
-	generateReads(coverage, errorProfile);
+	unordered_map <string, pair<string, uint32_t>> transcriptSeqAndExpression;
+	cout << "Generating reference transcripts and expressions..." << endl;
+	generateTranscriptReferences(expressionFileName, transcriptsFileName, transcriptSeqAndExpression);
+	cout << "Computing reads." << endl;
+	generateReads(coverage, errorProfile, transcriptSeqAndExpression);
 	auto end = chrono::system_clock::now(); auto waitedFor = end - startChrono;
 	cout << "Time  in ms : " << (chrono::duration_cast<chrono::milliseconds>(waitedFor).count()) << endl;
 
