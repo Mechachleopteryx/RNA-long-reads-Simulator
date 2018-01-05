@@ -221,6 +221,56 @@ vector<string> split(const string &s, char delim){
 }
 
 
+
+pair<string, string> getRead(ifstream* readFile){
+	pair<string, string> reads;
+	string header, read, inter;
+	char c;
+	getline(*readFile,header);
+	getline(*readFile,read);
+	point:
+	c=readFile->peek();
+	if(c=='>'){
+		if(read.size()>0){
+			bool fail(false);
+			for(uint j(0);(j)<read.size();++j){
+				if(read[j]!='A' and read[j]!='C' and read[j]!='T' and read[j]!='G' and read[j]!='N'){
+					fail=true;
+					break;
+				}
+			}
+			if(!fail){
+				reads = {header,read};
+			}
+		}
+		read="";
+	}else{
+		if(!readFile->eof()){
+			getline(*readFile,inter);
+			read+=inter;
+			goto point;
+		}else{
+			if(read.size()>0){
+				bool fail(false);
+				for(uint j(0);(j)<read.size();++j){
+					if(read[j]!='A' and read[j]!='C' and read[j]!='T' and read[j]!='G' and read[j]!='N'){
+						fail=true;
+						break;
+					}
+				}
+				if(!fail){
+					reads = {header,read};
+				}
+			}
+		}
+	}
+	return reads;
+}
+
+
+
+
+
 //// this function needs to be updated with the output filled with sequences from the ref transcriptome and expressions levels from FS ////
 void generateTranscriptReferences(string& expressionFileName, string& transcriptsFileName, unordered_map <string, pair<string, uint32_t>>& transcriptSeqAndExpression){
 	ifstream expression(expressionFileName);
@@ -239,16 +289,19 @@ void generateTranscriptReferences(string& expressionFileName, string& transcript
 	}
 	// read the fasta file and get sequences
 	ifstream sequences(transcriptsFileName);
-	string seq, header;
+	//~ string seq, header;
+	pair<string, string> read;
 	while (not sequences.eof()){
-		getline(sequences, header);
-		getline(sequences, seq);
-		if ((not header.empty()) and (not seq.empty())){
-			transcript = header.substr(1);
-			if (transcriptSeqAndExpression.count(transcript)){
-				transcriptSeqAndExpression[transcript].first = seq;
-			}
+		//~ getline(sequences, header);
+		//~ getline(sequences, seq);
+		read = getRead(&sequences);
+		//~ if ((not header.empty()) and (not seq.empty())){
+		transcript = split(read.first.substr(1), ' ')[0];
+		if (transcriptSeqAndExpression.count(transcript)){
+			transcriptSeqAndExpression[transcript].first = read.second;
+			//~ transcriptSeqAndExpression[transcript].first = seq;
 		}
+		//~ }
 	}
 	//~ vector<pair<string, uint32_t>> result;
 	//~ string transcript;
