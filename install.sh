@@ -1,5 +1,2 @@
-cd simulator;
-make;
-mv theReadCreator ..;
-cd ..;
+(cd simulator && make)
 (cd extractSequencesFromGTF/gffread && make)
