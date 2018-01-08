@@ -191,13 +191,20 @@ def main():
 	# ========================================================================
 	#						Get expression levels
 	# ========================================================================
-	#TODO
+	print("Getting expression levels...")
+	
 	try:
-		print("Getting expression levels...")
-		expressionLevelsCmd = ""
-		#~ cmdMv = "mv file.pro " + OUT_RESULTS_FILES + "/expression.pro"
-		#~ subprocess.check_output(['bash','-c', cmdMv])
-		#~ checkWrittenFiles( OUT_RESULTS_FILES + "/expression.pro")
+		# ------------------------------------------------------------------------
+		#				  Write a .par file for Flux Simulator
+		# ------------------------------------------------------------------------
+		parameterFile = open(OUT_RESULTS_FILES + "/file_for_expression.par", 'w')
+		parameterFile.write("REF_FILE_NAME\t" + gtfFilePath + "\nPRO_FILE\t"  + OUT_RESULTS_FILES + "/expression.pro")
+		checkWrittenFiles(OUT_RESULTS_FILES + "/file_for_expression.par")
+		# ------------------------------------------------------------------------
+		#				  Launch Flux Simulator for expression generation
+		# ------------------------------------------------------------------------
+		expressionLevelsCmd = "flux-simulator -x -p " + + OUT_RESULTS_FILES + "/file_for_expression.par"
+		checkWrittenFiles( OUT_RESULTS_FILES + "/expression.pro")
 	except SystemExit:
 		sys.exit(1);
 	except KeyboardInterrupt:
