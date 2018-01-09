@@ -3,7 +3,7 @@ The gffread command line is:
 gffread/gffread -g <reference.fasta> -w <transcripts.fa> <gtf_file>
 ```
 
-We just need to take extra care that the chromosomes names in the genome_dir is the same chromosome names in the gtf file
+We just need to take extra care that the chromosomes names in the reference.fasta is the same chromosome names in the gtf file
 
 For the sample example, GTFs downloaded from https://www.ensembl.org/info/data/ftp/index.html. Sequences downloaded also from Ensemble.
 
