@@ -76,7 +76,7 @@ class ErrorProfileBuilder:
 
     #run alignqc to get the error profile
     #TODO: this is not well-coded
-    print("Invoking {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py to compute the error profile!".format(wd=os.path.dirname(os.path.realpath(__file__)))
+    print("Invoking {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py to compute the error profile!".format(wd=os.path.dirname(os.path.realpath(__file__))))
     commandLine = "python {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py --max_length {maxBases} -random  -r {ref} --input_index {index} -o {bamFileOnly}.error.pdf \
     --output_stats {bamFileOnly}.error.stats --output_raw {bamFileOnly}.error.raw {bam}".format(wd=os.path.dirname(os.path.realpath(__file__)), index=args.sorted_bam_index,\
     ref=args.reference, maxBases=args.max_bases, bam=args.sorted_bam, bamFileOnly=os.path.basename(args.sorted_bam))
