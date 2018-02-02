@@ -106,10 +106,9 @@ def main():
 	# ------------------------------------------------------------------------
 	#							 Define allowed options
 	# ------------------------------------------------------------------------
-	parser.add_argument('-t',	action="store",	dest="chromosomeFilesPath",	type=str,	default = "",	help="Path to the the directory that contains the chromosomes FASTA files.")
 	parser.add_argument('-g',	action="store",	dest="gtfFilePath",	type=str,	default = "",	help="Path to the GTF file")
-	parser.add_argument('-b',	action="store",	dest="bamFilePath",	type=str,	default = "",	help="Path to the BAM file")
-	parser.add_argument('-i',	action="store",	dest="baiFilePath",	type=str,	default = "",	help="Path to the BAI file")
+	parser.add_argument('-b',	action="store",	dest="bamFilePath",	type=str,	default = "",	help="Path to the BAM file - used only to produced the error profile")
+	parser.add_argument('-i',	action="store",	dest="baiFilePath",	type=str,	default = "",	help="Path to the BAI file - used only to produced the error profile")
 	parser.add_argument('-r',	action="store",	dest="genomeRefPath",	type=str,	default = "",	help="Path to the reference genome file")
 	parser.add_argument('-c', action="store", dest="coverage",	type=str,	default = "1",	help="An integer that represents the desired coverage (default=1)")
 	parser.add_argument('-o', action="store", dest="outputDirPath",	type=str,	default = ".",	help="Path to the output directory (default: .)")
@@ -132,15 +131,14 @@ def main():
 	bamFilePath			= options.bamFilePath
 	baiFilePath			= options.baiFilePath
 	genomeRefPath		= options.genomeRefPath
-	chromosomeFilesPath	= options.chromosomeFilesPath
 	coverage			= options.coverage
 	outputDirPath 		= options.outputDirPath
 	
 	# ------------------------------------------------------------------------
 	#				Check if mandatory arguments are missing
 	# ------------------------------------------------------------------------
-	if gtfFilePath == "" or bamFilePath == "" or baiFilePath == "" or genomeRefPath == "" or chromosomeFilesPath == "":
-		dieToFatalError("There are missing arguments.\n Mandatory arugments: -t -b -g -i -r\nUsage: ./RNACreator -t CHROMOSOME_FILES_DIRECTORY_PATH -g PATH_TO_GTF -b PATH_TO_BAM -i PATH_TO_BAI -r PATH_TO_REFERENCE_GENOME -c COVERAGE -o OUTPUT_DIRECTORY") 
+	if gtfFilePath == "" or bamFilePath == "" or baiFilePath == "" or genomeRefPath == "":
+		dieToFatalError("There are missing arguments.\n Mandatory arguments: -b -g -i -r\nUsage: ./RNACreator CHROMOSOME_FILES_DIRECTORY_PATH -g PATH_TO_GTF -b PATH_TO_BAM -i PATH_TO_BAI -r PATH_TO_REFERENCE_GENOME -c COVERAGE -o OUTPUT_DIRECTORY") 
 
 
 	# ------------------------------------------------------------------------
@@ -218,7 +216,7 @@ def main():
 	# ========================================================================
 	try:
 		print("Getting reference transcripts...")
-		referenceTranscriptsCmd = SEQ_GTF_EXTRACTOR_PATH + "gffread/gffread -g " + chromosomeFilesPath + " -w " + OUT_RESULTS_FILES + "/transcripts.fa " + gtfFilePath
+		referenceTranscriptsCmd = SEQ_GTF_EXTRACTOR_PATH + "gffread/gffread -g " + genomeRefPath + " -w " + OUT_RESULTS_FILES + "/transcripts.fa " + gtfFilePath
 		subprocessLauncher(referenceTranscriptsCmd)
 		checkWrittenFiles(OUT_RESULTS_FILES + "/transcripts.fa")
 	except SystemExit:
