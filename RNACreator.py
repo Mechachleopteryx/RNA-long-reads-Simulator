@@ -171,7 +171,8 @@ def main():
 	# ========================================================================
 	try:
 		print("Getting error profile...")
-		errorProfileCmd = ERROR_PROFILE_BUILDER_PATH + "errorProfileBuilder.py -b " + bamFilePath + " -i " + baiFilePath + " -r " + genomeRefPath
+		errorProfileCmd = "python " + ERROR_PROFILE_BUILDER_PATH + "/errorProfileBuilder.py -b " + bamFilePath + " -i " + baiFilePath + " -r " + genomeRefPath
+		print getTimestamp() + "Running " + errorProfileCmd
 		subprocessLauncher(errorProfileCmd)
 		cmdMv = "mv error_profile.basic " + OUT_RESULTS_FILES
 		subprocess.check_output(['bash','-c', cmdMv])
