@@ -206,6 +206,7 @@ def main():
 		#				  Launch Flux Simulator for expression generation
 		# ------------------------------------------------------------------------
 		expressionLevelsCmd = fluxSimulatorBin + " -x -p " + OUT_RESULTS_FILES + "/file_for_expression.par"
+		print getTimestamp() + "Running " + expressionLevelsCmd
 		subprocessLauncher(expressionLevelsCmd)
 		checkWrittenFiles( OUT_RESULTS_FILES + "/expression.pro")
 	except SystemExit:
