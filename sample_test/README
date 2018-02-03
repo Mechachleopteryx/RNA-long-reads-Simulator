@@ -12,7 +12,7 @@ python ../RNACreator.py -g Mus_musculus.GRCm38.91.chr19.gtf -b gmap_CB_1Donly_to
 
 
 #What was done to get the data:
-#We got the 100k first reads fomr the raw 1D_only reads from mouse RNA produced by Genoscope in the ASTER project (these runs were on ngs-provisoire):
+#We got the 100k first reads from the raw 1D_only reads from mouse RNA produced by Genoscope in the ASTER project (these runs were on ngs-provisoire):
 cd /data2/ASTER/error_correction/raw_1D_only_data_no_mito_no_rDNA
 head -n 400000 BYK_CB_ONT_1_FAF04998_A_1Donly.no_mito.no_rDNA.fastq > BYK_CB_ONT_1_FAF04998_A_1Donly.no_mito.no_rDNA.100k.fastq
 mv BYK_CB_ONT_1_FAF04998_A_1Donly.no_mito.no_rDNA.100k.fastq /data2/leandro/RNA_simulator/

@@ -174,7 +174,7 @@ def main():
 		errorProfileCmd = "python " + ERROR_PROFILE_BUILDER_PATH + "/errorProfileBuilder.py -b " + bamFilePath + " -i " + baiFilePath + " -r " + genomeRefPath
 		print getTimestamp() + "Running " + errorProfileCmd
 		subprocessLauncher(errorProfileCmd)
-		cmdMv = "mv error_profile.basic " + OUT_RESULTS_FILES
+		cmdMv = "mv error_profile.basic error_profile.detailed " + OUT_RESULTS_FILES
 		subprocess.check_output(['bash','-c', cmdMv])
 		checkWrittenFiles(OUT_RESULTS_FILES + "/error_profile.basic")
 	except SystemExit:	# happens when checkWrittenFiles() returns an error
@@ -203,6 +203,7 @@ def main():
 		#				  Launch Flux Simulator for expression generation
 		# ------------------------------------------------------------------------
 		expressionLevelsCmd = "flux-simulator -x -p " + + OUT_RESULTS_FILES + "/file_for_expression.par"
+		subprocessLauncher(expressionLevelsCmd)
 		checkWrittenFiles( OUT_RESULTS_FILES + "/expression.pro")
 	except SystemExit:
 		sys.exit(1);
