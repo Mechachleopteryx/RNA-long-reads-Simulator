@@ -203,7 +203,7 @@ def main():
 		# ------------------------------------------------------------------------
 		#				  Launch Flux Simulator for expression generation
 		# ------------------------------------------------------------------------
-		expressionLevelsCmd = "flux-simulator -x -p " + + OUT_RESULTS_FILES + "/file_for_expression.par"
+		expressionLevelsCmd = "flux-simulator -x -p " + OUT_RESULTS_FILES + "/file_for_expression.par"
 		subprocessLauncher(expressionLevelsCmd)
 		checkWrittenFiles( OUT_RESULTS_FILES + "/expression.pro")
 	except SystemExit:
