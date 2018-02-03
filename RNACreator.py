@@ -17,6 +17,7 @@ import shutil
 import os.path
 import tempfile
 import argparse
+import traceback
 from subprocess import Popen, PIPE, STDOUT
 
 # ############################################################################
@@ -163,7 +164,7 @@ def main():
 		print("Results will be stored in: ", outputDirPath)
 	except:
 		print("Could not write in output directory :", sys.exc_info()[0])
-		dieToFatalError('')
+		dieToFatalError(traceback.format_exc())
 	#TODO print cmd line and path to the different input files in log
 
 	# ========================================================================
@@ -183,7 +184,7 @@ def main():
 		sys.exit(1);
 	except:
 		print("Unexpected error during error profile computation:", sys.exc_info()[0])
-		dieToFatalError('')
+		dieToFatalError(traceback.format_exc())
 
 	#TODO check if keys in gtf are the same than in the fasta files
 
@@ -211,7 +212,7 @@ def main():
 		sys.exit(1);
 	except:
 		print("Unexpected error during expression levels computation:", sys.exc_info()[0])
-		dieToFatalError('')
+		dieToFatalError(traceback.format_exc())
 
 	# ========================================================================
 	#						Get reference transcripts
@@ -227,7 +228,7 @@ def main():
 		sys.exit(1);
 	except:
 		print("Unexpected error during reference transcripts computation:", sys.exc_info()[0])
-		dieToFatalError('')
+		dieToFatalError(traceback.format_exc())
 		
 	# ========================================================================
 	#						Simulate long reads
@@ -247,7 +248,7 @@ def main():
 		sys.exit(1);
 	except:
 		print("Unexpected error during read simulation process:", sys.exc_info()[0])
-		dieToFatalError('')
+		dieToFatalError(traceback.format_exc())
 
 
 #TODO rm other files
