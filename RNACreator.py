@@ -31,7 +31,7 @@ def getPlatform():
 	elif sys.platform == "darwin":
 		return "OSX"
 	else:
-		print("[ERROR] BWISE is not compatible with Windows.")
+		print("[ERROR] This simulator is not compatible with Windows.")
 		sys.exit(1);
 
 
@@ -68,7 +68,7 @@ def checkWrittenFiles(files):
 # to return if an error makes the run impossible
 def dieToFatalError (msg):
   print("[FATAL ERROR] " + msg)
-  print("Try `Bwise --help` for more information")
+  print("Try --help` for more information")
   sys.exit(1);
 
 
@@ -175,7 +175,7 @@ def main():
 	try:
 		print("Getting error profile...")
 		errorProfileCmd = "python " + ERROR_PROFILE_BUILDER_PATH + "/errorProfileBuilder.py -b " + bamFilePath + " -i " + baiFilePath + " -r " + genomeRefPath
-		print getTimestamp() + "Running " + errorProfileCmd
+		print(getTimestamp() + "Running " + errorProfileCmd)
 		subprocessLauncher(errorProfileCmd)
 		cmdMv = "mv error_profile.basic error_profile.detailed " + OUT_RESULTS_FILES
 		subprocess.check_output(['bash','-c', cmdMv])
@@ -206,7 +206,7 @@ def main():
 		#				  Launch Flux Simulator for expression generation
 		# ------------------------------------------------------------------------
 		expressionLevelsCmd = fluxSimulatorBin + " -x -p " + OUT_RESULTS_FILES + "/file_for_expression.par"
-		print getTimestamp() + "Running " + expressionLevelsCmd
+		print(getTimestamp() + "Running " + expressionLevelsCmd)
 		subprocessLauncher(expressionLevelsCmd)
 		checkWrittenFiles( OUT_RESULTS_FILES + "/expression.pro")
 	except SystemExit:
