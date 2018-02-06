@@ -200,12 +200,12 @@ def main():
 		#				  Write a .par file for Flux Simulator
 		# ------------------------------------------------------------------------
 		parameterFile = open(OUT_RESULTS_FILES + "/file_for_expression.par", 'w')
-		parameterFile.write("REF_FILE_NAME\t" + gtfFilePath + "\nPRO_FILE\t"  + OUT_RESULTS_FILES + "/expression.pro")
+		parameterFile.write("REF_FILE_NAME\t" + os.path.abspath(gtfFilePath) + "\nGEN_DIR\t" + os.path.dirname(os.path.abspath(genomeRefPath)))
 		checkWrittenFiles(OUT_RESULTS_FILES + "/file_for_expression.par")
 		# ------------------------------------------------------------------------
 		#				  Launch Flux Simulator for expression generation
 		# ------------------------------------------------------------------------
-		expressionLevelsCmd = fluxSimulatorBin + " -x -p " + OUT_RESULTS_FILES + "/file_for_expression.par"
+		expressionLevelsCmd = fluxSimulatorBin + " -x -p " + os.path.abspath(OUT_RESULTS_FILES + "/file_for_expression.par")
 		print(getTimestamp() + "Running " + expressionLevelsCmd)
 		subprocessLauncher(expressionLevelsCmd)
 		checkWrittenFiles( OUT_RESULTS_FILES + "/expression.pro")
