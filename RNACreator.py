@@ -235,7 +235,7 @@ def main():
 	# ========================================================================
 	try:
 		print("Getting reference transcripts...")
-		referenceTranscriptsCmd = SEQ_GTF_EXTRACTOR_PATH + "gffread/gffread -g " + genomeRefPath + " -w " + OUT_RESULTS_FILES + "/transcripts.fa " + gtfFilePath
+		referenceTranscriptsCmd = SEQ_GTF_EXTRACTOR_PATH + "/gffread/gffread -g " + genomeRefPath + " -w " + OUT_RESULTS_FILES + "/transcripts.fa " + gtfFilePath
 		subprocessLauncher(referenceTranscriptsCmd)
 		checkWrittenFiles(OUT_RESULTS_FILES + "/transcripts.fa")
 	except SystemExit:
