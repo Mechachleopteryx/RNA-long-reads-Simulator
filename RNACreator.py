@@ -236,6 +236,7 @@ def main():
 	try:
 		print("Getting reference transcripts...")
 		referenceTranscriptsCmd = SEQ_GTF_EXTRACTOR_PATH + "/gffread/gffread -g " + genomeRefPath + " -w " + OUT_RESULTS_FILES + "/transcripts.fa " + gtfFilePath
+		print(getTimestamp() + "Running " + referenceTranscriptsCmd)
 		subprocessLauncher(referenceTranscriptsCmd)
 		checkWrittenFiles(OUT_RESULTS_FILES + "/transcripts.fa")
 	except SystemExit:
@@ -252,7 +253,8 @@ def main():
 	try:
 		print("Simulating reads...")
 		simulationCmd = SIMULATOR_PATH + "./theReadCreator -c " + coverage + " -e " + OUT_RESULTS_FILES + "/error_profile.basic -t " + OUT_RESULTS_FILES + "/transcripts.fa -p "+ OUT_RESULTS_FILES + "/file_for_expression.pro"
-		subprocessLauncher(referenceTranscriptsCmd)
+		print(getTimestamp() + "Running " + simulationCmd)
+		subprocessLauncher(simulationCmd)
 		cmdMv = "mv simulatedReads.fa simulatedPerfectSequences.fa " + outputDirPath
 		subprocess.check_output(['bash','-c', cmdMv])
 		checkWrittenFiles(outputDirPath + "/simulatedReads.fa")
