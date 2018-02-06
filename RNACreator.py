@@ -251,7 +251,7 @@ def main():
 	# ========================================================================
 	try:
 		print("Simulating reads...")
-		simulationCmd = SIMULATOR_PATH + "./theReadCreator -c " + coverage + " -e " + OUT_RESULTS_FILES + "/error_profile.basic -t " + OUT_RESULTS_FILES + "/transcripts.fa -p "+ OUT_RESULTS_FILES + "/expression.pro"
+		simulationCmd = SIMULATOR_PATH + "./theReadCreator -c " + coverage + " -e " + OUT_RESULTS_FILES + "/error_profile.basic -t " + OUT_RESULTS_FILES + "/transcripts.fa -p "+ OUT_RESULTS_FILES + "/file_for_expression.pro"
 		subprocessLauncher(referenceTranscriptsCmd)
 		cmdMv = "mv simulatedReads.fa simulatedPerfectSequences.fa " + outputDirPath
 		subprocess.check_output(['bash','-c', cmdMv])
