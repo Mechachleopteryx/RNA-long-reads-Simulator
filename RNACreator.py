@@ -41,6 +41,13 @@ def getTimestamp():
 
 
 
+# check if file exists and is not empty
+def checkIfFile(pathToFile):
+	if not(os.path.exists(pathToFile) and os.path.getsize(pathToFile) > 0):
+		return False
+	return True
+
+
 # check if reads files are present
 def checkReadFiles(readfiles):
 	if readfiles is None:
@@ -200,15 +207,21 @@ def main():
 		#				  Write a .par file for Flux Simulator
 		# ------------------------------------------------------------------------
 		parameterFile = open(OUT_RESULTS_FILES + "/file_for_expression.par", 'w')
-		parameterFile.write("REF_FILE_NAME\t" + os.path.abspath(gtfFilePath) + "\nGEN_DIR\t" + os.path.dirname(os.path.abspath(genomeRefPath)))
+		parameterFile.write("REF_FILE_NAME\t" + os.path.abspath(gtfFilePath) + "\nGEN_DIR\t" + os.path.dirname(os.path.abspath(genomeRefPath)) + "\nPRO_FILE_NAME\t" +  os.path.abspath(OUT_RESULTS_FILES + "/file_for_expression.pro"))
+		parameterFile.close()
 		checkWrittenFiles(OUT_RESULTS_FILES + "/file_for_expression.par")
+
+		if checkIfFile(OUT_RESULTS_FILES + "/file_for_expression.pro"):
+			cmdRm = "rm " + OUT_RESULTS_FILES + "/file_for_expression.pro"
+			subprocess.check_output(['bash','-c', cmdRm])
+			
 		# ------------------------------------------------------------------------
 		#				  Launch Flux Simulator for expression generation
 		# ------------------------------------------------------------------------
 		expressionLevelsCmd = fluxSimulatorBin + " -x -p " + os.path.abspath(OUT_RESULTS_FILES + "/file_for_expression.par")
 		print(getTimestamp() + "Running " + expressionLevelsCmd)
 		subprocessLauncher(expressionLevelsCmd)
-		checkWrittenFiles( OUT_RESULTS_FILES + "/expression.pro")
+		checkWrittenFiles( OUT_RESULTS_FILES + "/file_for_expression.pro")
 	except SystemExit:
 		sys.exit(1);
 	except KeyboardInterrupt:
