@@ -255,10 +255,10 @@ def main():
 		simulationCmd = SIMULATOR_PATH + "/theReadCreator -c " + coverage + " -e " + OUT_RESULTS_FILES + "/error_profile.basic -t " + OUT_RESULTS_FILES + "/transcripts.fa -p "+ OUT_RESULTS_FILES + "/file_for_expression.pro"
 		print(getTimestamp() + "Running " + simulationCmd)
 		subprocessLauncher(simulationCmd)
-		cmdMv = "mv simulatedReads.fa simulatedPerfectSequences.fa " + outputDirPath
+		cmdMv = "mv simulatedReads.fa simulatedPerfectSequences.fa " + OUT_RESULTS_FILES 
 		subprocess.check_output(['bash','-c', cmdMv])
-		checkWrittenFiles(outputDirPath + "/simulatedReads.fa")
-		checkWrittenFiles(outputDirPath + "/simulatedPerfectSequences.fa")
+		checkWrittenFiles(OUT_RESULTS_FILES + "/simulatedReads.fa")
+		checkWrittenFiles(OUT_RESULTS_FILES + "/simulatedPerfectSequences.fa")
 		print(printTime("\nThe end !\nSimulation took: ", time.time() - wholeT))
 	except SystemExit:
 		sys.exit(1);
