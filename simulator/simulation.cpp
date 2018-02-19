@@ -285,13 +285,13 @@ void generateTranscriptReferences(string& expressionFileName, string& transcript
 	while (not expression.eof()){
 		getline(expression, expressionLine);
 		transcriptExpression = split(expressionLine, '\t');
-		if (transcriptExpression.size() > 6){
-			expr = stoi(transcriptExpression[5]);
+		if (transcriptExpression.size() > 5){
+			expr = stoi(transcriptExpression[5])/10;
 			transcript = transcriptExpression[1];
 			transcriptSeqAndExpression.insert({transcript, {"", expr}});
 		}
 	}
-	// read the fasta file and get sequences
+	//~ // read the fasta file and get sequences
 	ifstream sequences(transcriptsFileName);
 	pair<string, string> read;
 	while (not sequences.eof()){
