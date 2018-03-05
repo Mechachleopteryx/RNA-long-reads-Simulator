@@ -76,10 +76,17 @@ class ErrorProfileBuilder:
 
     #run alignqc to get the error profile
     #TODO: this is not well-coded
-    print("Invoking {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py to compute the error profile!".format(wd=os.path.dirname(os.path.realpath(__file__))))
-    commandLine = "python {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py --max_length {maxBases} -random  -r {ref} --input_index {index} -o {bamFileOnly}.error.pdf \
+    #print("Invoking {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py to compute the error profile!".format(wd=os.path.dirname(os.path.realpath(__file__))))
+    #commandLine = "python {wd}/AlignQC/alignqc/bam_to_alignment_error_plot.py --max_length {maxBases} -random  -r {ref} --input_index {index} -o {bamFileOnly}.error.pdf \
+    #--output_stats {bamFileOnly}.error.stats --output_raw {bamFileOnly}.error.raw {bam}".format(wd=os.path.dirname(os.path.realpath(__file__)), index=args.sorted_bam_index,\
+    #ref=args.reference, maxBases=args.max_bases, bam=args.sorted_bam, bamFileOnly=os.path.basename(args.sorted_bam))
+
+
+    print("Invoking {wd}/AlignQCTest/bam_to_alignment_error_plot.py to compute the error profile!".format(wd=os.path.dirname(os.path.realpath(__file__))))
+    commandLine = "python {wd}/AlignQCTest/bam_to_alignment_error_plot.py --max_length {maxBases} -random  -r {ref} --input_index {index} -o {bamFileOnly}.error.pdf \
     --output_stats {bamFileOnly}.error.stats --output_raw {bamFileOnly}.error.raw {bam}".format(wd=os.path.dirname(os.path.realpath(__file__)), index=args.sorted_bam_index,\
     ref=args.reference, maxBases=args.max_bases, bam=args.sorted_bam, bamFileOnly=os.path.basename(args.sorted_bam))
+
     print(commandLine)
     os.system(commandLine)
     print("Done!")
@@ -96,7 +103,7 @@ class ErrorProfileBuilder:
     requiredArgs.add_argument('-i', '--sorted_bam_index',help="sorted BAMFILE index", required=True)
     requiredArgs.add_argument('-r','--reference',help="Fasta reference file", required=True)
     parser.add_argument('-o','--output', default="error_profile", help="OUTPUTFILE for error profile")
-    parser.add_argument('--max_bases',type=int,default=100000,help="Maximum number of bases to build the profile from")
+    parser.add_argument('--max_bases',type=int,default=1000000,help="Maximum number of bases to build the profile from")
 
     args = parser.parse_args()
     return args
