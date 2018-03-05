@@ -63,14 +63,15 @@ def main(args):
   of.write(epf.get_alignment_errors().get_report())
   of.close()
 
-  for ofile in args.output:
-    cmd = [args.rscript_path,
-           os.path.dirname(os.path.realpath(__file__))+'/plot_alignment_errors.r',
-           args.tempdir+'/report.txt',ofile]
-    if args.scale:
-      cmd += [str(x) for x in args.scale]
-    sys.stderr.write(" ".join(cmd)+"\n")
-    call(cmd)
+  #NO NEED FOR THIS FOR US
+  # for ofile in args.output:
+  #   cmd = [args.rscript_path,
+  #          os.path.dirname(os.path.realpath(__file__))+'/plot_alignment_errors.r',
+  #          args.tempdir+'/report.txt',ofile]
+  #   if args.scale:
+  #     cmd += [str(x) for x in args.scale]
+  #   sys.stderr.write(" ".join(cmd)+"\n")
+  #   call(cmd)
 
 
   if args.output_raw:
