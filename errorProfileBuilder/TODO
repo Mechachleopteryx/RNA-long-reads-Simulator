@@ -1,7 +1,15 @@
--generate staircase effect profile or model it using a gaussian distribution?
--error_profile.detailed is not divided between homopolymers insertion and deletion. It could be interesting to do so (not sure if AlignQC gives us this info)
--get context specific error profile
--from e-mail:
-    Keep in memory the n last bases when I write a read
-    if these bases are all a A or all a C and so  on, with a certain probability p I insert m additionnal bases of the same nucleotide.
-    Could we infer n, p and m from AlignQC ?
+-Generate staircase effect profile or model it using a gaussian distribution?
+
+-For the homopolymers, this is the algorithm we have in mind:
+	-Keep in memory the n last bases when we write a read
+		-if these bases are all a A or all a C and so on, with a certain probability p I insert m additionnal bases of the same nucleotide (homopolymer insertion) or remove m bases (homopolymer deletion).
+	-Could we infer n, p and m from AlignQC?
+		-I don't think so, but this would be a nice way to model homopolymer. I will try to implement this.
+
+-error_profile.detailed does not contain info about homopolymers insertion and deletions. It could be interesting to do so (not sure if AlignQC gives us this info);
+
+-Get context specific error profile?
+
+-Maybe it would be intereting to get the 6-mer error profile?
+	-The probability of changing a 6-mer to another?
+	-This is what the basecaller produces from the raw signal...
