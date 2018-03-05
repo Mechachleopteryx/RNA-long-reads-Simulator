@@ -1,6 +1,3 @@
-[submodule "alignqc"]
-	path = errorProfileBuilder/AlignQC
-	url = https://github.com/jason-weirather/AlignQC
 [submodule "extractSequencesFromGTF/gclib"]
 	path = extractSequencesFromGTF/gclib
 	url = https://github.com/gpertea/gclib
