@@ -1,4 +1,7 @@
 # How to execute the sample test - we will simulate long reads from the Mus Musculus chrom 19
+#active the venv
+source venv/bin/activate
+
 #unpack
 tar -zxvf sample_test.tar.gz
 
