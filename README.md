@@ -5,6 +5,7 @@
 python 2.7
 virtualenv
 GCC
+FluxSimulator (http://sammeth.net/confluence/display/SIM/Home)
 ```
 
 ## Installing:
