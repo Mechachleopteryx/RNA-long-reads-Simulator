@@ -101,12 +101,15 @@ void insertion(double rate, string& result){
 
 
 //// add errors in reads usinf the error profile ////
-string mutateSequence(const string& referenceSequence, 	unordered_map<string, double>& errorProfile){
+string mutateSequence(string& referenceSequence, 	unordered_map<string, double>& errorProfile){
+	
+	uint INSERT(0),DELETION(0),SUB(0);
 	string result, currentNuc, homopoly;
 	result.reserve(5 * referenceSequence.size());
 	// get each error value
 	// sort mism/ins/del
 	double errors [] = {errorProfile["mismatches"], errorProfile["non-homopolymer_ins"], errorProfile["non-homopolymer_del"], errorProfile["homopolymer_ins"], errorProfile["non-homopolymer_del"]};
+	
 	double errorsHomo [] = {errorProfile["homopolymer_ins"], errorProfile["non-homopolymer_del"]};
 	vector<double> errorOrder(errors, errors + 3);
 	vector<double> errorOrderHomo(errorsHomo, errorsHomo + 2);
@@ -123,7 +126,7 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 		} else if (val == errorProfile["non-homopolymer_del"]){
 			errorProfileSorted.insert({"non-homopolymer_del", val * 100*100*100 + prevValue});
 		}
-		prevValue += val;
+		prevValue += (val * 100*100*100);
 	}
 	prevValue = 0;
 	for (auto&& val : errorOrderHomo){
@@ -132,7 +135,7 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 		} else if (val == errorProfile["homopolymer_del"]){
 			errorProfileHomoSorted.insert({"homopolymer_del", val * 100*100*100 + prevValue});
 		}
-		prevValue += val;
+		prevValue += (val * 100*100*100);
 	}
 	uint32_t i(0);
 	bool isError(false);
@@ -154,7 +157,7 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 			}
 		} else {
 			uint32_t probaHomopoly(rand() % 100*100*100);
-			for (auto it(errorProfileHomoSorted.begin()); it !=errorProfileHomoSorted.end(); ++it){
+			for (auto it(errorProfileHomoSorted.rbegin()); it !=errorProfileHomoSorted.rend(); ++it){
 				if (probaHomopoly < it->second){
 					if (it->first == "homopolymer_del"){
 						removeHomopolymer(currentNuc.size(), result);
@@ -171,10 +174,11 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 			currentNuc = {};
 		}
 		if (not isError){  // if not already added an error in homopolymer at this base
-			for (auto it(errorProfileSorted.begin()); it !=errorProfileSorted.end(); ++it){
+			for (auto it(errorProfileSorted.rbegin()); it !=errorProfileSorted.rend(); ++it){
 				if (dice < it->second){
 					if (it->first == "mismatches"){
 						//SUBSTITUTION
+						SUB++;
 						char newNucleotide(randomNucleotide());
 						while(newNucleotide == referenceSequence[i]){
 							newNucleotide = randomNucleotide();
@@ -184,6 +188,7 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 						break;
 					} else if (it->first == "non-homopolymer_del"){
 						// DELETION
+						DELETION++;
 						uint dice2(rand() % 100*100*100);
 						while (dice2 < it->second and i < referenceSequence.size()){ // deletions larger than 1
 							++i;
@@ -193,6 +198,7 @@ string mutateSequence(const string& referenceSequence, 	unordered_map<string, do
 						break;
 					} else if (it->first == "non-homopolymer_ins"){
 						// INSERTION
+						INSERT++;
 						char newNucleotide(randomNucleotide());
 						result.push_back(referenceSequence[i]);
 						result.push_back(newNucleotide);
