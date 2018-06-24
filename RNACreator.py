@@ -105,6 +105,7 @@ def main():
 	SIMULATOR_PATH = SIMULATOR_MAIN + "/simulator" 
 	ERROR_PROFILE_BUILDER_PATH = SIMULATOR_MAIN + "/errorProfileBuilder"
 	SEQ_GTF_EXTRACTOR_PATH = SIMULATOR_MAIN + "/extractSequencesFromGTF"
+	fluxSimulatorBin = SIMULATOR_MAIN + "/thirdparty/flux-simulator-1.2.1/bin/flux-simulator"
 	
 	# ========================================================================
 	#						 Manage command line arguments
@@ -120,7 +121,6 @@ def main():
 	parser.add_argument('-r',	action="store",	dest="genomeRefPath",	type=str,	default = "",	help="Path to the reference genome file")
 	parser.add_argument('-c', action="store", dest="coverage",	type=str,	default = "1",	help="An integer that represents the desired coverage (default=1)")
 	parser.add_argument('-o', action="store", dest="outputDirPath",	type=str,	default = ".",	help="Path to the output directory (default: .)")
-	parser.add_argument('--fsPath', action="store", dest="fluxSimulatorBin",	type=str,	default = "flux-simulator",	help="Path to flux-simulator binary (default: flux-simulator (the bin is in your path))")
 	parser.add_argument('--version', action='version', version='%(prog)s 0.0.1')
 
 	# ------------------------------------------------------------------------
@@ -142,7 +142,6 @@ def main():
 	genomeRefPath		= options.genomeRefPath
 	coverage			= options.coverage
 	outputDirPath 		= options.outputDirPath
-	fluxSimulatorBin	= options.fluxSimulatorBin
 	
 	# ------------------------------------------------------------------------
 	#				Check if mandatory arguments are missing
