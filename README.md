@@ -8,7 +8,7 @@ This tool relies on FluxSimulator (http://sammeth.net/confluence/display/SIM/Hom
 ```
 python 2.7
 virtualenv
-GCC
+g++
 java
 ```
 
