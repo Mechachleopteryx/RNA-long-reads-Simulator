@@ -96,6 +96,13 @@ def printWarningMsg(msg):
 	print("[Warning] " + msg)
 
 
+# we should probably improve this function and use it throughout the code
+def executeCommandLine(commandLine):
+    print "Running %s" % commandLine
+    subprocess.check_call(commandLine.split())
+
+
+
 
 def main():
 
@@ -117,7 +124,6 @@ def main():
 	# ------------------------------------------------------------------------
 	parser.add_argument('-g',	action="store",	dest="gtfFilePath",	type=str,	default = "",	help="Path to the GTF file")
 	parser.add_argument('-b',	action="store",	dest="bamFilePath",	type=str,	default = "",	help="Path to the BAM file - used only to produced the error profile")
-	parser.add_argument('-i',	action="store",	dest="baiFilePath",	type=str,	default = "",	help="Path to the BAI file - used only to produced the error profile")
 	parser.add_argument('-r',	action="store",	dest="genomeRefPath",	type=str,	default = "",	help="Path to the reference genome file")
 	parser.add_argument('-c', action="store", dest="coverage",	type=str,	default = "1",	help="An integer that represents the desired coverage (default=1)")
 	parser.add_argument('-o', action="store", dest="outputDirPath",	type=str,	default = ".",	help="Path to the output directory (default: .)")
@@ -138,7 +144,6 @@ def main():
 	# ------------------------------------------------------------------------
 	gtfFilePath			= options.gtfFilePath
 	bamFilePath			= options.bamFilePath
-	baiFilePath			= options.baiFilePath
 	genomeRefPath		= options.genomeRefPath
 	coverage			= options.coverage
 	outputDirPath 		= options.outputDirPath
@@ -146,7 +151,7 @@ def main():
 	# ------------------------------------------------------------------------
 	#				Check if mandatory arguments are missing
 	# ------------------------------------------------------------------------
-	if gtfFilePath == "" or bamFilePath == "" or baiFilePath == "" or genomeRefPath == "":
+	if gtfFilePath == "" or bamFilePath == "" or genomeRefPath == "":
 		dieToFatalError("There are missing arguments.\n Mandatory arguments: -b -g -i -r\nUsage: ./RNACreator CHROMOSOME_FILES_DIRECTORY_PATH -g PATH_TO_GTF -b PATH_TO_BAM -i PATH_TO_BAI -r PATH_TO_REFERENCE_GENOME -c COVERAGE -o OUTPUT_DIRECTORY") 
 
 
@@ -180,7 +185,17 @@ def main():
 	# ========================================================================
 	try:
 		print("Getting error profile...")
-		errorProfileCmd = "python " + ERROR_PROFILE_BUILDER_PATH + "/errorProfileBuilder.py -b " + bamFilePath + " -i " + baiFilePath + " -r " + genomeRefPath
+
+		#first just keep the primary mapping
+		print("Processing bam %s..."%bamFilePath)
+		processedBam="%s.primary.bam"%(os.path.basename(bamFilePath))
+		processedSortedBam = "%s.primary.sorted.bam" % (os.path.basename(bamFilePath))
+		executeCommandLine("samtools view -F 256 -b -o {processedBam} {bamFilePath}".format(**locals())) #TODO: replace by f"..."?
+		executeCommandLine("samtools sort {processedBam} -o {processedSortedBam}".format(**locals())) #TODO: replace by f"..."?
+		executeCommandLine("samtools index {processedSortedBam}".format(**locals())) #TODO: replace by f"..."?
+		print("Processing bam %s - Done!" % bamFilePath)
+
+		errorProfileCmd = "python " + ERROR_PROFILE_BUILDER_PATH + "/errorProfileBuilder.py -b " + processedSortedBam + " -i " + processedSortedBam + ".bai -r " + genomeRefPath
 		print(getTimestamp() + "Running " + errorProfileCmd)
 		subprocessLauncher(errorProfileCmd)
 		cmdMv = "mv error_profile.basic error_profile.detailed " + OUT_RESULTS_FILES
