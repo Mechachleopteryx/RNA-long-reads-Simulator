@@ -190,7 +190,7 @@ def main():
 		print("Processing bam %s..."%bamFilePath)
 		processedBam="%s.primary.bam"%(os.path.basename(bamFilePath))
 		processedSortedBam = "%s.primary.sorted.bam" % (os.path.basename(bamFilePath))
-		executeCommandLine("samtools view -F 256 -b -o {processedBam} {bamFilePath}".format(**locals())) #TODO: replace by f"..."?
+		executeCommandLine("samtools view -F 260 -b -o {processedBam} {bamFilePath}".format(**locals())) #TODO: replace by f"..."?
 		executeCommandLine("samtools sort {processedBam} -o {processedSortedBam}".format(**locals())) #TODO: replace by f"..."?
 		executeCommandLine("samtools index {processedSortedBam}".format(**locals())) #TODO: replace by f"..."?
 		print("Processing bam %s - Done!" % bamFilePath)
